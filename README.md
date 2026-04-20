@@ -19,7 +19,14 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 ### Option 1: Mac Setup (recommended for Mac users)
 
 1. Install [Node.js](https://nodejs.org) (LTS version) if you don't have it
-2. Right-click **`setup-mac.command`** > Open (first time only, to bypass Gatekeeper)
+2. Right-click **`setup-mac.command`** > **Open**
+
+   > **Gatekeeper warning:** macOS will show _"setup-mac.command cannot be opened because it is from an unidentified developer"_ or _"Apple cannot check it for malicious software."_
+   >
+   > **Workaround:** Go to **System Settings > Privacy & Security**, scroll down to the Security section, and click **"Open Anyway"** next to the blocked file. Then run it again.
+   >
+   > **Terminal access:** macOS will also ask _"Terminal wants to access files in your Downloads folder"_ (or wherever you saved the repo). Click **Allow** — Terminal needs this to install dependencies and create the app.
+
 3. Follow the prompts — it installs dependencies and creates a **PRISM.app** you can double-click
 4. From then on, just double-click **PRISM.app** (or the Desktop shortcut) to launch
 
