@@ -9,6 +9,7 @@ import MonteCarloChart from '@/components/MonteCarloChart';
 import SimulationSummaryPanel from '@/components/SimulationSummary';
 import DecisionFraming from '@/components/DecisionFraming';
 import TreatmentForm from '@/components/TreatmentForm';
+import RelatedScenarios from '@/components/RelatedScenarios';
 
 function fmt(val: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
@@ -268,6 +269,8 @@ export default function ScenarioDetailPage({ params }: { params: Promise<{ id: s
               <DecisionFraming scenario={scenario} />
             </>
           )}
+
+          <RelatedScenarios scenario={scenario} />
         </div>
       )}
 
