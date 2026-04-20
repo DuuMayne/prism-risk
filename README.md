@@ -6,67 +6,91 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 
 ## Features
 
-- **Scenario Register** - Create and manage risk scenarios with structured taxonomy classification
-- **Scenario Templates** - Start from pre-built patterns and customize, no blank-page problem
-- **Monte Carlo Simulation** - Run 1,000-iteration simulations in-browser with visual results
-- **Treatment Comparison** - Model control investments and see how they shift the loss distribution
-- **Decision Framing** - Auto-generated risk posture assessment with leadership-ready narrative
-- **Portfolio Analysis** - Compare risk across dimensions, visualize treatment coverage gaps
-- **Taxonomy Management** - Editable controlled vocabulary for consistent classification
+- **Scenario Register** — Create and manage risk scenarios with structured taxonomy classification
+- **Scenario Templates** — 25 pre-built risk patterns across 11 categories to start from
+- **Guided Quantification** — Plain-language questions help you estimate frequency and impact without guessing raw numbers
+- **Monte Carlo Simulation** — Run 1,000-iteration simulations in-browser with visual results
+- **Treatment Comparison** — Model control investments and see how they shift the loss distribution
+- **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative
+- **Portfolio Analysis** — Compare risk across dimensions, visualize treatment coverage gaps
+- **Taxonomy Management** — Editable controlled vocabulary for consistent classification
 
 ## Getting Started
 
-### Prerequisites
+### Step 1: Install Node.js
 
-Install [Node.js](https://nodejs.org) (LTS version — click the big green button on the homepage).
+Download and install [Node.js](https://nodejs.org) (click the **LTS** button — the big green one).
 
-To verify it installed correctly, open your terminal and run:
+**Verify it works:** Open your terminal and type:
 ```
 node -v
 ```
-You should see a version number like `v20.x.x` or higher.
+You should see something like `v20.x.x` or higher. If you get "command not found," restart your terminal after installing.
 
-### Setup (one time)
+> **How to open a terminal:**
+> - **Mac:** Press `Cmd + Space`, type "Terminal", press Enter
+> - **Windows:** Press `Win + R`, type "cmd", press Enter (or search for "PowerShell")
 
-1. Download or clone this repository
-2. Open your terminal (Mac: Terminal.app or iTerm; Windows: PowerShell or Command Prompt)
-3. Navigate to the project folder:
+### Step 2: Download PRISM
+
+**Option A — Git clone (if you have git):**
+```
+git clone https://github.com/DuuMayne/prism-risk.git
+cd prism-risk
+```
+
+**Option B — Download ZIP:**
+1. Go to https://github.com/DuuMayne/prism-risk
+2. Click the green **Code** button > **Download ZIP**
+3. Extract the ZIP file
+4. In your terminal, navigate to the extracted folder:
    ```
-   cd path/to/prism-risk
-   ```
-4. Install dependencies:
-   ```
-   npm install
+   cd ~/Downloads/prism-risk-main
    ```
 
-### Running PRISM
+### Step 3: Install dependencies (one time)
 
-From the project folder, run:
+```
+npm install
+```
+
+This takes 1-2 minutes the first time. You only need to do this once (or after pulling updates).
+
+### Step 4: Run PRISM
+
 ```
 npm run dev
 ```
 
-Then open your browser to **http://localhost:3000**
+Then open your browser to: **http://localhost:3000**
 
-To stop the server, press `Ctrl + C` in the terminal.
+You should see the PRISM dashboard. The database is created automatically on first launch.
+
+**To stop:** Press `Ctrl + C` in the terminal window.
+
+**To restart later:** Just repeat Step 4 — open terminal, `cd` to the folder, `npm run dev`.
 
 ### Docker (alternative)
 
-If you prefer Docker:
+If you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed:
 ```
 docker compose up
 ```
-Open http://localhost:3000. Data persists between restarts.
+Open http://localhost:3000. Your data persists between restarts.
 
 ## Updating
 
-After pulling new code:
+When new versions are available:
+
 ```
+git pull
+npm install
 npm run migrate
 ```
-Or go to **Settings > Refresh Database** in the app.
 
-Your scenarios and treatments are always preserved.
+Or after pulling new code, go to **Settings > Refresh Database** in the app.
+
+Your scenarios and treatments are always preserved during updates.
 
 ## Tech Stack
 
