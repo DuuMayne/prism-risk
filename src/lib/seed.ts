@@ -86,7 +86,7 @@ const TAXONOMY = [
 const SEED_SCENARIO = {
   id: 'SCN-0001',
   scenario_family: 'Identity compromise',
-  scenario_title: 'Workforce IdP admin account takeover',
+  scenario_title: '[EXAMPLE] Workforce IdP admin account takeover',
   scenario_pattern: 'Phishing-driven workforce admin account takeover',
   scenario_statement: 'External criminal uses social engineering to compromise a workforce identity provider administrator account, enabling unauthorized access to borrower servicing data and elevated system control.',
   threat_community: 'External attacker',

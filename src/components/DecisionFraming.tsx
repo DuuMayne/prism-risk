@@ -98,7 +98,7 @@ function getTreatmentAssessment(
   } else {
     findings.push({
       type: 'negative',
-      text: `Treatment does not reduce expected annual loss. Verify that the reduction percentages are applied to the correct FAIR factors.`,
+      text: `Treatment does not reduce expected annual loss. Verify that the reduction percentages are applied to the correct risk factors (frequency, vulnerability, or magnitude).`,
     });
   }
 

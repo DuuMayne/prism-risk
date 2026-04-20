@@ -24,7 +24,7 @@ const DIMENSION_TOOLTIPS: Record<string, string> = {
   'Threat Action': 'The specific action or method used. Drives vulnerability estimates and control mapping.',
   'Loss Event Family': 'What type of loss occurs. Frames the magnitude estimation and downstream impacts.',
   'Loss Form': 'How the loss shows up financially. Multiple forms can apply to a single scenario.',
-  'Control Type': 'Functional role of a control in the FAIR model. Determines whether it reduces frequency or magnitude.',
+  'Control Type': 'Functional role of a control in the risk model. Determines whether it reduces frequency or magnitude.',
 };
 
 const DIMENSION_COLORS: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function TaxonomyPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Taxonomy</h1>
-          <p className="text-sm text-[var(--muted)] mt-1">Controlled vocabulary for FAIR-based scenario classification</p>
+          <p className="text-sm text-[var(--muted)] mt-1">Controlled vocabulary for risk scenario classification</p>
         </div>
         <button onClick={startCreate} className="btn btn-primary">+ Add Entry</button>
       </div>

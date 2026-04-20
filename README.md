@@ -2,11 +2,11 @@
 
 **Predictive Risk Intelligence and Scoring Model**
 
-A quantitative risk management application built on the [FAIR](https://www.fairinstitute.org/) (Factor Analysis of Information Risk) methodology. PRISM replaces spreadsheet-based risk registers with an interactive tool for scenario modeling, Monte Carlo simulation, and treatment comparison.
+A quantitative risk management application. PRISM replaces spreadsheet-based risk registers with an interactive tool for scenario modeling, Monte Carlo simulation, and treatment comparison.
 
 ## Features
 
-- **Scenario Register** — Create and manage risk scenarios with full FAIR taxonomy classification
+- **Scenario Register** — Create and manage risk scenarios with structured taxonomy classification
 - **Monte Carlo Simulation** — Run 1,000-iteration triangular distribution simulations in-browser
 - **Treatment Comparison** — Model control investments and see how they shift the loss distribution
 - **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative

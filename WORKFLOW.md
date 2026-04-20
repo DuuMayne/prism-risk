@@ -2,11 +2,11 @@
 
 ## What is PRISM?
 
-**Predictive Risk Intelligence and Scoring Model** — a web application that replaces a FAIR (Factor Analysis of Information Risk) spreadsheet-based risk register with an interactive, quantitative risk management tool.
+**Predictive Risk Intelligence and Scoring Model** — a web application that replaces a spreadsheet-based risk register with an interactive, quantitative risk management tool.
 
 ## Origin
 
-The application was built from a reference Excel workbook (`FAIR Risk Register.xlsx`) that contained:
+The application was built from a reference Excel workbook (`Risk Register.xlsx`) that contained:
 - A controlled taxonomy for scenario classification (Scenario Family, Threat Community, Threat Action, Loss Event Family, Loss Form, Control Type)
 - A schema defining 37+ fields per risk scenario across identity, classification, governance, and quantification groups
 - A risk scenario register with capacity for 1,000 scenarios
@@ -18,7 +18,7 @@ The application was built from a reference Excel workbook (`FAIR Risk Register.x
 
 ### 1. Spreadsheet Analysis
 - Parsed the Excel workbook programmatically to extract structure, formulas, seed data, and design principles
-- Identified the FAIR model flow: TEF × Vulnerability = LEF, LEF × Loss Magnitude = Annual Loss
+- Identified the quantitative model flow: TEF × Vulnerability = LEF, LEF × Loss Magnitude = Annual Loss
 - Mapped the triangular distribution sampling approach used for Monte Carlo
 - Documented the treatment comparison methodology (proportional reductions to frequency and magnitude inputs)
 
@@ -62,7 +62,7 @@ The application was built from a reference Excel workbook (`FAIR Risk Register.x
 - Entries are now specific to lending/fintech operational context
 
 ### 8. UX Polish
-- Tooltips across all forms explaining each field's purpose and how it's used in the FAIR model
+- Tooltips across all forms explaining each field's purpose and how it's used in the risk model
 - Treatment form organized into Identity, Frequency Reduction, and Magnitude Reduction sections
 - Live percentage readouts on reduction inputs
 - Collapsible detailed metrics to reduce information density
