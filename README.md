@@ -6,13 +6,13 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 
 ## Features
 
-- **Scenario Register** — Create and manage risk scenarios with structured taxonomy classification
-- **Scenario Templates** — Start from pre-built patterns and customize, no blank-page problem
-- **Monte Carlo Simulation** — Run 1,000-iteration simulations in-browser with visual results
-- **Treatment Comparison** — Model control investments and see how they shift the loss distribution
-- **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative
-- **Portfolio Analysis** — Compare risk across dimensions, visualize treatment coverage gaps
-- **Taxonomy Management** — Editable controlled vocabulary for consistent classification
+- **Scenario Register** - Create and manage risk scenarios with structured taxonomy classification
+- **Scenario Templates** - Start from pre-built patterns and customize, no blank-page problem
+- **Monte Carlo Simulation** - Run 1,000-iteration simulations in-browser with visual results
+- **Treatment Comparison** - Model control investments and see how they shift the loss distribution
+- **Decision Framing** - Auto-generated risk posture assessment with leadership-ready narrative
+- **Portfolio Analysis** - Compare risk across dimensions, visualize treatment coverage gaps
+- **Taxonomy Management** - Editable controlled vocabulary for consistent classification
 
 ## Getting Started
 
