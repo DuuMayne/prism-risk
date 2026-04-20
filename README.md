@@ -82,4 +82,6 @@ See [WORKFLOW.md](./WORKFLOW.md) for the full development process and architectu
 
 ## License
 
-[AGPL-3.0](./LICENSE) — open source, copyleft. You may use, modify, and distribute this software freely. If you run a modified version as a network service, you must make your source code available under the same license.
+[Apache 2.0 with Commons Clause](./LICENSE)
+
+You may freely use, modify, and share PRISM — including for business purposes. You may **not** sell it, host it as a paid service, or otherwise monetize it without written permission from the author.

@@ -81,7 +81,7 @@ export default function SettingsPage() {
           </div>
           <div className="flex justify-between">
             <dt className="text-[var(--muted)]">License</dt>
-            <dd>AGPL-3.0</dd>
+            <dd>Apache 2.0 + Commons Clause</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-[var(--muted)]">Database</dt>
