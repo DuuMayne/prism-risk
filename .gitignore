@@ -39,6 +39,9 @@ yarn-error.log*
 # database
 /data
 
+# generated app bundle
+PRISM.app
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
