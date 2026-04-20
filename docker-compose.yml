@@ -1,0 +1,12 @@
+services:
+  prism:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - prism-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  prism-data:
+    driver: local

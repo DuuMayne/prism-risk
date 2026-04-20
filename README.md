@@ -10,19 +10,52 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 - **Monte Carlo Simulation** — Run 1,000-iteration triangular distribution simulations in-browser
 - **Treatment Comparison** — Model control investments and see how they shift the loss distribution
 - **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative
+- **Portfolio Analysis** — Compare risk across dimensions, visualize treatment coverage gaps
 - **Taxonomy Management** — Full CRUD for controlled vocabulary (Threat Community, Actions, Loss Forms, etc.)
 - **Portfolio Dashboard** — Ranked risk overview with ALE comparisons and risk signals
 
-## Quick Start
+## Getting Started
+
+### Option 1: Double-click (Mac)
+
+1. Install [Node.js](https://nodejs.org) (LTS version) if you don't have it
+2. Double-click **`start.command`**
+3. PRISM opens in your browser at http://localhost:3000
+
+### Option 2: Double-click (Windows)
+
+1. Install [Node.js](https://nodejs.org) (LTS version) if you don't have it
+2. Double-click **`start.bat`**
+3. PRISM opens in your browser at http://localhost:3000
+
+### Option 3: Docker (any platform)
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Run:
+   ```bash
+   docker compose up
+   ```
+3. Open http://localhost:3000
+
+Your data persists in a Docker volume between restarts.
+
+### Option 4: Command line
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open http://localhost:3000.
 
-The database seeds automatically on first request with example taxonomy and a sample scenario.
+## Updating
+
+After pulling new code, refresh your database to get the latest taxonomy and system updates:
+
+- **From the app:** Go to Settings > click "Refresh Database"
+- **From the command line:** `npm run migrate`
+
+Your scenarios and treatments are always preserved.
 
 ## Tech Stack
 
