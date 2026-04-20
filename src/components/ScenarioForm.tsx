@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scenario, TaxonomyEntry } from '@/lib/types';
 import Tooltip, { InfoIcon } from './Tooltip';
+import GuidedQuantification from './GuidedQuantification';
 
 function FieldLabel({ label, tooltip }: { label: string; tooltip: string }) {
   return (
@@ -235,115 +236,17 @@ export default function ScenarioForm({ scenario, isEdit }: Props) {
 
       {/* Quantification */}
       <div className="card">
-        <h2 className="text-base font-semibold mb-4">Quantification Inputs</h2>
-        <div className="space-y-5">
-          <div>
-            <FieldLabel label="Time Horizon (Months)" tooltip="The modeling period for this scenario. Typically 12 months for annualized loss estimates." />
-            <input className="input w-32" type="number" value={form.time_horizon_months}
-              onChange={(e) => set('time_horizon_months', parseInt(e.target.value) || 12)} />
-          </div>
-
-          <div>
-            <FieldLabel
-              label="Threat Event Frequency (events/year)"
-              tooltip="How many times per year does this type of threat event attempt to occur? Use a triangular estimate: the lowest reasonable count, most likely count, and highest plausible count. Example: phishing campaigns targeting your admins might range from 2 (quiet year) to 18 (active campaign)."
-            />
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              <div>
-                <label className="label">Low</label>
-                <input className="input" type="number" step="any" value={form.tef_low}
-                  onChange={(e) => set('tef_low', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Most Likely</label>
-                <input className="input" type="number" step="any" value={form.tef_ml}
-                  onChange={(e) => set('tef_ml', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">High</label>
-                <input className="input" type="number" step="any" value={form.tef_high}
-                  onChange={(e) => set('tef_high', parseFloat(e.target.value) || 0)} />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <FieldLabel
-              label="Vulnerability (probability 0-1)"
-              tooltip="Given a threat event occurs, what is the probability it succeeds and becomes a loss event? 0.05 = 5% chance of success per attempt. Consider your existing controls when estimating. Example: with MFA in place, phishing success rate might be 5-15% per attempt."
-            />
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              <div>
-                <label className="label">Low</label>
-                <input className="input" type="number" step="any" min="0" max="1" value={form.vuln_low}
-                  onChange={(e) => set('vuln_low', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Most Likely</label>
-                <input className="input" type="number" step="any" min="0" max="1" value={form.vuln_ml}
-                  onChange={(e) => set('vuln_ml', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">High</label>
-                <input className="input" type="number" step="any" min="0" max="1" value={form.vuln_high}
-                  onChange={(e) => set('vuln_high', parseFloat(e.target.value) || 0)} />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <FieldLabel
-              label="Primary Loss Magnitude (USD/event)"
-              tooltip="Direct costs per loss event: incident response, productivity loss, containment, system restoration. Does NOT include secondary costs like fines or lawsuits. Estimate the range of costs for a single event occurrence."
-            />
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              <div>
-                <label className="label">Low</label>
-                <input className="input" type="number" step="any" value={form.primary_loss_low}
-                  onChange={(e) => set('primary_loss_low', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Most Likely</label>
-                <input className="input" type="number" step="any" value={form.primary_loss_ml}
-                  onChange={(e) => set('primary_loss_ml', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">High</label>
-                <input className="input" type="number" step="any" value={form.primary_loss_high}
-                  onChange={(e) => set('primary_loss_high', parseFloat(e.target.value) || 0)} />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <FieldLabel
-              label="Secondary Loss"
-              tooltip="Secondary losses are downstream consequences that may or may not materialize: regulatory fines, lawsuits, customer restitution, reputational damage. Not every loss event triggers these -- estimate the probability separately from the magnitude."
-            />
-            <div className="grid grid-cols-4 gap-3 mt-2">
-              <div>
-                <FieldLabel label="Event Probability" tooltip="The chance that a primary loss event escalates to trigger secondary consequences (0-1). Example: 0.20 means 20% of events lead to regulatory/legal/reputational impact." />
-                <input className="input" type="number" step="any" min="0" max="1" value={form.secondary_event_prob}
-                  onChange={(e) => set('secondary_event_prob', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Loss Low</label>
-                <input className="input" type="number" step="any" value={form.secondary_loss_low}
-                  onChange={(e) => set('secondary_loss_low', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Loss Most Likely</label>
-                <input className="input" type="number" step="any" value={form.secondary_loss_ml}
-                  onChange={(e) => set('secondary_loss_ml', parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className="label">Loss High</label>
-                <input className="input" type="number" step="any" value={form.secondary_loss_high}
-                  onChange={(e) => set('secondary_loss_high', parseFloat(e.target.value) || 0)} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <h2 className="text-base font-semibold mb-4">Quantification</h2>
+        <GuidedQuantification
+          values={{
+            tef_low: form.tef_low, tef_ml: form.tef_ml, tef_high: form.tef_high,
+            vuln_low: form.vuln_low, vuln_ml: form.vuln_ml, vuln_high: form.vuln_high,
+            primary_loss_low: form.primary_loss_low, primary_loss_ml: form.primary_loss_ml, primary_loss_high: form.primary_loss_high,
+            secondary_event_prob: form.secondary_event_prob,
+            secondary_loss_low: form.secondary_loss_low, secondary_loss_ml: form.secondary_loss_ml, secondary_loss_high: form.secondary_loss_high,
+          }}
+          onChange={(v) => setForm((f) => ({ ...f, ...v }))}
+        />
       </div>
 
       <div className="flex gap-3">

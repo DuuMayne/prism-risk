@@ -7,61 +7,64 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 ## Features
 
 - **Scenario Register** — Create and manage risk scenarios with structured taxonomy classification
-- **Monte Carlo Simulation** — Run 1,000-iteration triangular distribution simulations in-browser
+- **Scenario Templates** — Start from pre-built patterns and customize, no blank-page problem
+- **Monte Carlo Simulation** — Run 1,000-iteration simulations in-browser with visual results
 - **Treatment Comparison** — Model control investments and see how they shift the loss distribution
 - **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative
 - **Portfolio Analysis** — Compare risk across dimensions, visualize treatment coverage gaps
-- **Taxonomy Management** — Full CRUD for controlled vocabulary (Threat Community, Actions, Loss Forms, etc.)
-- **Portfolio Dashboard** — Ranked risk overview with ALE comparisons and risk signals
+- **Taxonomy Management** — Editable controlled vocabulary for consistent classification
 
 ## Getting Started
 
-### Option 1: Mac Setup (recommended for Mac users)
+### Prerequisites
 
-1. Install [Node.js](https://nodejs.org) (LTS version) if you don't have it
-2. Right-click **`setup-mac.command`** > **Open**
+Install [Node.js](https://nodejs.org) (LTS version — click the big green button on the homepage).
 
-   > **Gatekeeper warning:** macOS will show _"setup-mac.command cannot be opened because it is from an unidentified developer"_ or _"Apple cannot check it for malicious software."_
-   >
-   > **Workaround:** Go to **System Settings > Privacy & Security**, scroll down to the Security section, and click **"Open Anyway"** next to the blocked file. Then run it again.
-   >
-   > **Terminal access:** macOS will also ask _"Terminal wants to access files in your Downloads folder"_ (or wherever you saved the repo). Click **Allow** — Terminal needs this to install dependencies and create the app.
+To verify it installed correctly, open your terminal and run:
+```
+node -v
+```
+You should see a version number like `v20.x.x` or higher.
 
-3. Follow the prompts — it installs dependencies and creates a **PRISM.app** you can double-click
-4. From then on, just double-click **PRISM.app** (or the Desktop shortcut) to launch
+### Setup (one time)
 
-### Option 2: Double-click (Windows)
-
-1. Install [Node.js](https://nodejs.org) (LTS version) if you don't have it
-2. Double-click **`start.bat`**
-3. PRISM opens in your browser at http://localhost:3000
-
-### Option 3: Docker (any platform)
-
-1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-2. Run:
-   ```bash
-   docker compose up
+1. Download or clone this repository
+2. Open your terminal (Mac: Terminal.app or iTerm; Windows: PowerShell or Command Prompt)
+3. Navigate to the project folder:
    ```
-3. Open http://localhost:3000
+   cd path/to/prism-risk
+   ```
+4. Install dependencies:
+   ```
+   npm install
+   ```
 
-Your data persists in a Docker volume between restarts.
+### Running PRISM
 
-### Option 4: Command line
-
-```bash
-npm install
+From the project folder, run:
+```
 npm run dev
 ```
 
-Open http://localhost:3000.
+Then open your browser to **http://localhost:3000**
+
+To stop the server, press `Ctrl + C` in the terminal.
+
+### Docker (alternative)
+
+If you prefer Docker:
+```
+docker compose up
+```
+Open http://localhost:3000. Data persists between restarts.
 
 ## Updating
 
-After pulling new code, refresh your database to get the latest taxonomy and system updates:
-
-- **From the app:** Go to Settings > click "Refresh Database"
-- **From the command line:** `npm run migrate`
+After pulling new code:
+```
+npm run migrate
+```
+Or go to **Settings > Refresh Database** in the app.
 
 Your scenarios and treatments are always preserved.
 
