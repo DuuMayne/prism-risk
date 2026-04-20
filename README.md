@@ -2,6 +2,8 @@
 
 **Predictive Risk Intelligence and Scoring Model**
 
+> **Branch: `feature/remediation`** — Staging branch for remediation tracking integration. Currently identical to `main`. The next iteration will explore generating remediation items from Treatment plans so that tracking is directly tied to quantified risk reduction. See `feature/remediation-v1` for the first (shelved) approach.
+
 A quantitative risk management application. PRISM replaces spreadsheet-based risk registers with an interactive tool for scenario modeling, Monte Carlo simulation, and treatment comparison.
 
 ## Features
