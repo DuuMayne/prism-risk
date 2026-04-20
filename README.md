@@ -2,6 +2,8 @@
 
 **Predictive Risk Intelligence and Scoring Model**
 
+> **Branch: `feature/remediation-v1`** — On hold. This branch adds standalone remediation tracking to PRISM (Phases 1-4 below). The approach works but feels too disconnected from the risk scenarios — remediation items exist as their own entities rather than being generated from Treatment plans. The next iteration (`feature/remediation`) will explore tighter Treatment-to-Remediation linkage. This branch is preserved as a reference for the workflow engine, SLA, and evidence patterns.
+
 A quantitative risk management application. PRISM replaces spreadsheet-based risk registers with an interactive tool for scenario modeling, Monte Carlo simulation, and treatment comparison.
 
 ## Features
@@ -14,6 +16,30 @@ A quantitative risk management application. PRISM replaces spreadsheet-based ris
 - **Decision Framing** — Auto-generated risk posture assessment with leadership-ready narrative
 - **Portfolio Analysis** — Compare risk across dimensions, visualize treatment coverage gaps
 - **Taxonomy Management** — Editable controlled vocabulary for consistent classification
+
+### Remediation Tracking (this branch only)
+
+- **Remediation Items** — Track findings with severity, finding type, owner, and due dates (`/remediation`)
+- **Workflow State Machine** — open → in_progress → blocked → resolved → verified → closed, with enforced rules (blocked requires comment, resolved requires resolution type)
+- **Evidence Management** — Attach evidence records (screenshots, logs, attestations) before resolving
+- **SLA Policies** — Auto-calculated due dates based on finding type + severity, configurable in Settings
+- **Immutable Audit Trail** — Every status change recorded with actor, comment, and timestamp
+- **Dashboard** — Summary metrics, status/severity/aging charts, CSV export (`/remediation/dashboard`)
+- **Scenario Integration** — Bidirectional links between scenarios and remediation items; remediation coverage section on Portfolio Analysis page
+
+### What changed vs. `main`
+
+| Area | Files | Summary |
+|------|-------|---------|
+| Database | `src/lib/db.ts` | 4 new tables: `remediation_items`, `status_history`, `evidence`, `sla_policies` |
+| Types | `src/lib/remediation-types.ts` | Interfaces, constants, badge maps, formatters |
+| Workflow | `src/lib/workflow.ts` | State machine with transition validation |
+| SLA | `src/lib/sla.ts` | Due date calculation from policies with severity defaults |
+| API | `src/app/api/remediation/**` | CRUD, status transitions, evidence, dashboard, export |
+| API | `src/app/api/sla/` | SLA policy management |
+| Pages | `src/app/remediation/**` | List, detail (3 tabs), create, edit, dashboard |
+| Components | `src/components/EvidenceForm.tsx` | Evidence entry form |
+| Modified | `Navbar`, scenario detail, settings, portfolio, seed | Nav link, remediation panel, SLA config, coverage section, default SLAs |
 
 ## Getting Started
 
