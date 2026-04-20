@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { SlaPolicy, FINDING_TYPES, SEVERITIES, formatFindingType } from '@/lib/remediation-types';
 
 export default function SettingsPage() {
   const [migrating, setMigrating] = useState(false);
@@ -9,6 +10,44 @@ export default function SettingsPage() {
     results: string[];
     counts: { taxonomy: number; scenarios: number; treatments: number };
   } | null>(null);
+
+  // SLA state
+  const [slaPolicies, setSlaPolicies] = useState<SlaPolicy[]>([]);
+  const [slaEditing, setSlaEditing] = useState(false);
+  const [slaForm, setSlaForm] = useState({ finding_type: 'other', severity: 'medium', due_in_days: 30, escalation_after_days: 14 });
+  const [slaSaving, setSlaSaving] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/sla').then((r) => r.json()).then(setSlaPolicies);
+  }, []);
+
+  const saveSla = async () => {
+    setSlaSaving(true);
+    await fetch('/api/sla', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(slaForm),
+    });
+    const updated = await fetch('/api/sla').then((r) => r.json());
+    setSlaPolicies(updated);
+    setSlaEditing(false);
+    setSlaSaving(false);
+  };
+
+  const deleteSla = async (id: number) => {
+    await fetch(`/api/sla?id=${id}`, { method: 'DELETE' });
+    setSlaPolicies((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const editSla = (policy: SlaPolicy) => {
+    setSlaForm({
+      finding_type: policy.finding_type,
+      severity: policy.severity,
+      due_in_days: policy.due_in_days,
+      escalation_after_days: policy.escalation_after_days,
+    });
+    setSlaEditing(true);
+  };
 
   const runMigration = async () => {
     if (!confirm('Refresh the database? This will update taxonomy entries and mark the seed scenario. Your scenarios and treatments will be preserved.')) return;
@@ -65,6 +104,91 @@ export default function SettingsPage() {
               <span className="badge badge-purple">{result.counts.treatments} treatments</span>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* SLA Policies section */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-base font-semibold">SLA Policies</h2>
+          <button
+            onClick={() => { setSlaForm({ finding_type: 'other', severity: 'medium', due_in_days: 30, escalation_after_days: 14 }); setSlaEditing(true); }}
+            className="btn btn-secondary text-xs"
+          >
+            + Add Policy
+          </button>
+        </div>
+        <p className="text-sm text-[var(--muted)] mb-4">
+          Configure due date and escalation timelines for remediation items by finding type and severity.
+        </p>
+
+        {slaEditing && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <label className="label">Finding Type</label>
+                <select className="input" value={slaForm.finding_type} onChange={(e) => setSlaForm((f) => ({ ...f, finding_type: e.target.value }))}>
+                  {FINDING_TYPES.map((t) => <option key={t} value={t}>{formatFindingType(t)}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="label">Severity</label>
+                <select className="input" value={slaForm.severity} onChange={(e) => setSlaForm((f) => ({ ...f, severity: e.target.value }))}>
+                  {SEVERITIES.map((s) => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="label">Due In (days)</label>
+                <input className="input" type="number" min={1} value={slaForm.due_in_days}
+                  onChange={(e) => setSlaForm((f) => ({ ...f, due_in_days: parseInt(e.target.value) || 1 }))} />
+              </div>
+              <div>
+                <label className="label">Escalate After (days)</label>
+                <input className="input" type="number" min={1} value={slaForm.escalation_after_days}
+                  onChange={(e) => setSlaForm((f) => ({ ...f, escalation_after_days: parseInt(e.target.value) || 1 }))} />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={saveSla} disabled={slaSaving} className="btn btn-primary text-sm">
+                {slaSaving ? 'Saving...' : 'Save Policy'}
+              </button>
+              <button onClick={() => setSlaEditing(false)} className="btn btn-secondary text-sm">Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {slaPolicies.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Finding Type</th>
+                  <th>Severity</th>
+                  <th>Due In (days)</th>
+                  <th>Escalate After (days)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {slaPolicies.map((p) => (
+                  <tr key={p.id}>
+                    <td className="text-sm">{formatFindingType(p.finding_type)}</td>
+                    <td><span className={`badge ${p.severity === 'critical' ? 'badge-red' : p.severity === 'high' ? 'badge-yellow' : p.severity === 'medium' ? 'badge-blue' : 'badge-gray'}`}>{p.severity}</span></td>
+                    <td className="font-mono text-sm">{p.due_in_days}</td>
+                    <td className="font-mono text-sm">{p.escalation_after_days}</td>
+                    <td>
+                      <div className="flex gap-2">
+                        <button onClick={() => editSla(p)} className="btn btn-secondary text-xs py-1 px-2">Edit</button>
+                        <button onClick={() => deleteSla(p.id)} className="btn btn-danger text-xs py-1 px-2">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--muted)]">No SLA policies configured. Default severity-based timelines will be used.</p>
         )}
       </div>
 

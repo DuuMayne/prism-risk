@@ -192,4 +192,31 @@ export function seedDatabase() {
     });
     tx();
   }
+
+  // Seed default SLA policies
+  const slaCount = db.prepare('SELECT COUNT(*) as count FROM sla_policies').get() as { count: number };
+  if (slaCount.count === 0) {
+    const insertSla = db.prepare(
+      'INSERT INTO sla_policies (finding_type, severity, due_in_days, escalation_after_days) VALUES (?, ?, ?, ?)'
+    );
+    const slaTx = db.transaction(() => {
+      // Default SLA policies by severity (applied to all finding types)
+      const defaults = [
+        { severity: 'critical', due: 3, escalation: 1 },
+        { severity: 'high', due: 7, escalation: 3 },
+        { severity: 'medium', due: 30, escalation: 14 },
+        { severity: 'low', due: 90, escalation: 45 },
+      ];
+      const findingTypes = [
+        'excessive_privilege', 'orphaned_account', 'stale_access',
+        'mfa_disabled', 'unauthorized_access', 'policy_violation', 'other',
+      ];
+      for (const ft of findingTypes) {
+        for (const d of defaults) {
+          insertSla.run(ft, d.severity, d.due, d.escalation);
+        }
+      }
+    });
+    slaTx();
+  }
 }

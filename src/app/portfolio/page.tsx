@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import { Scenario } from '@/lib/types';
+import { RemediationItem, STATUS_BADGES, formatStatus } from '@/lib/remediation-types';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   Legend, PieChart, Pie, Cell, Treemap,
@@ -50,12 +52,14 @@ export default function PortfolioPage() {
   const [primaryDimension, setPrimaryDimension] = useState('scenario_family');
   const [secondaryDimension, setSecondaryDimension] = useState('treatment_status');
   const [viewMode, setViewMode] = useState<ViewMode>('exposure');
+  const [remediationItems, setRemediationItems] = useState<RemediationItem[]>([]);
 
   useEffect(() => {
     fetch('/api/scenarios').then((r) => r.json()).then((data) => {
       setScenarios(data);
       setLoading(false);
     });
+    fetch('/api/remediation').then((r) => r.json()).then(setRemediationItems);
   }, []);
 
   const quantified = useMemo(() => scenarios.filter((s) => s.ale_ml_bound > 0), [scenarios]);
@@ -501,6 +505,99 @@ export default function PortfolioPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ============ REMEDIATION COVERAGE ============ */}
+      {remediationItems.length > 0 && (
+        <div className="card">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold">Remediation Coverage</h3>
+            <Link href="/remediation/dashboard" className="text-xs text-[var(--accent)] hover:underline">
+              View full dashboard
+            </Link>
+          </div>
+          <p className="text-xs text-[var(--muted)] mb-4">
+            Remediation tracking status for scenarios with linked findings.
+          </p>
+          {(() => {
+            const linked = remediationItems.filter((r) => r.scenario_id);
+            const scenariosWithRemediation = new Set(linked.map((r) => r.scenario_id));
+            const overdueItems = linked.filter((r) =>
+              r.due_date && new Date(r.due_date) < new Date() && !['verified', 'closed'].includes(r.status)
+            );
+            const statusCounts = linked.reduce<Record<string, number>>((acc, r) => {
+              acc[r.status] = (acc[r.status] || 0) + 1;
+              return acc;
+            }, {});
+
+            // Per-dimension breakdown
+            const dimensionLabel = DIMENSION_OPTIONS.find((d) => d.key === primaryDimension)?.label || primaryDimension;
+            const byDimension = groupedData.map((group) => {
+              const scenarioIds = new Set(group.scenarios.map((s) => s.id));
+              const groupItems = linked.filter((r) => r.scenario_id && scenarioIds.has(r.scenario_id));
+              const groupOverdue = groupItems.filter((r) =>
+                r.due_date && new Date(r.due_date) < new Date() && !['verified', 'closed'].includes(r.status)
+              );
+              return { name: group.name, total: groupItems.length, overdue: groupOverdue.length };
+            }).filter((d) => d.total > 0);
+
+            return (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-[var(--muted)]">Linked Items</div>
+                    <div className="text-lg font-bold">{linked.length}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-[var(--muted)]">Scenarios Covered</div>
+                    <div className="text-lg font-bold">{scenariosWithRemediation.size} / {scenarios.length}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-[var(--muted)]">Overdue</div>
+                    <div className={`text-lg font-bold ${overdueItems.length > 0 ? 'text-[var(--danger)]' : 'text-[var(--success)]'}`}>
+                      {overdueItems.length}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="text-xs text-[var(--muted)]">Status Breakdown</div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {Object.entries(statusCounts).map(([status, count]) => (
+                        <span key={status} className={`badge text-xs ${STATUS_BADGES[status] || 'badge-gray'}`}>
+                          {formatStatus(status)}: {count}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {byDimension.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>{dimensionLabel}</th>
+                          <th className="text-right">Items</th>
+                          <th className="text-right">Overdue</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {byDimension.map((d) => (
+                          <tr key={d.name}>
+                            <td className="text-sm font-medium">{d.name}</td>
+                            <td className="text-right font-mono">{d.total}</td>
+                            <td className={`text-right font-mono ${d.overdue > 0 ? 'text-[var(--danger)]' : ''}`}>
+                              {d.overdue > 0 ? d.overdue : '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

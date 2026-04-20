@@ -83,6 +83,60 @@ export function getDb(): Database.Database {
       notes TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS remediation_items (
+      id TEXT PRIMARY KEY,
+      scenario_id TEXT REFERENCES scenarios(id) ON DELETE SET NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      finding_type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'open',
+      resolution_type TEXT,
+      resolution_notes TEXT,
+      source_system TEXT,
+      application_name TEXT,
+      entitlement_name TEXT,
+      affected_user TEXT,
+      owner TEXT,
+      due_date TEXT,
+      resolved_at TEXT,
+      verified_at TEXT,
+      closed_at TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS status_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      remediation_item_id TEXT NOT NULL REFERENCES remediation_items(id) ON DELETE CASCADE,
+      from_status TEXT NOT NULL,
+      to_status TEXT NOT NULL,
+      actor TEXT,
+      comment TEXT,
+      resolution_type TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS evidence (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      remediation_item_id TEXT NOT NULL REFERENCES remediation_items(id) ON DELETE CASCADE,
+      evidence_type TEXT NOT NULL,
+      description TEXT NOT NULL,
+      file_url TEXT,
+      source_system TEXT,
+      uploaded_by TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS sla_policies (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      finding_type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      due_in_days INTEGER NOT NULL,
+      escalation_after_days INTEGER NOT NULL,
+      UNIQUE(finding_type, severity)
+    );
   `);
 
   return db;

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Scenario, Treatment } from '@/lib/types';
+import { RemediationItem, SEVERITY_BADGES, STATUS_BADGES, formatStatus } from '@/lib/remediation-types';
 import { runSimulation, applyTreatment, SimulationResult, ScenarioInputs } from '@/lib/monte-carlo';
 import MonteCarloChart from '@/components/MonteCarloChart';
 import SimulationSummaryPanel from '@/components/SimulationSummary';
@@ -28,12 +29,14 @@ export default function ScenarioDetailPage({ params }: { params: Promise<{ id: s
   const [treatedResult, setTreatedResult] = useState<SimulationResult | null>(null);
   const [selectedTreatment, setSelectedTreatment] = useState<Treatment | null>(null);
   const [showTreatmentForm, setShowTreatmentForm] = useState(false);
+  const [remediationItems, setRemediationItems] = useState<RemediationItem[]>([]);
   const [tab, setTab] = useState<'overview' | 'simulation' | 'treatment'>('overview');
 
 
   useEffect(() => {
     fetch(`/api/scenarios/${id}`).then((r) => r.json()).then(setScenario);
     fetch(`/api/treatments?scenario_id=${id}`).then((r) => r.json()).then(setTreatments);
+    fetch(`/api/remediation?scenario_id=${id}`).then((r) => r.json()).then(setRemediationItems);
   }, [id]);
 
   const getInputs = useCallback((s: Scenario): ScenarioInputs => ({
@@ -271,6 +274,52 @@ export default function ScenarioDetailPage({ params }: { params: Promise<{ id: s
           )}
 
           <RelatedScenarios scenario={scenario} />
+
+          {/* Remediation Items */}
+          <div className="card">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold">Remediation Items</h3>
+              <Link href={`/remediation/new?scenario_id=${id}`} className="btn btn-primary text-xs py-1 px-2">
+                + Create Item
+              </Link>
+            </div>
+            {remediationItems.length === 0 ? (
+              <p className="text-sm text-[var(--muted)]">No remediation items linked to this scenario.</p>
+            ) : (
+              <>
+                <div className="flex gap-2 mb-3">
+                  {Object.entries(
+                    remediationItems.reduce<Record<string, number>>((acc, r) => {
+                      acc[r.status] = (acc[r.status] || 0) + 1;
+                      return acc;
+                    }, {})
+                  ).map(([status, count]) => (
+                    <span key={status} className={`badge ${STATUS_BADGES[status] || 'badge-gray'}`}>
+                      {formatStatus(status)}: {count}
+                    </span>
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  {remediationItems.map((r) => (
+                    <Link
+                      key={r.id}
+                      href={`/remediation/${r.id}`}
+                      className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs text-[var(--muted)]">{r.id}</span>
+                        <span className="text-sm">{r.title}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`badge ${SEVERITY_BADGES[r.severity] || 'badge-gray'}`}>{r.severity}</span>
+                        <span className={`badge ${STATUS_BADGES[r.status] || 'badge-gray'}`}>{formatStatus(r.status)}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
