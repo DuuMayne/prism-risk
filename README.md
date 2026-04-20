@@ -38,4 +38,4 @@ See [WORKFLOW.md](./WORKFLOW.md) for the full development process and architectu
 
 ## License
 
-Private — not licensed for redistribution.
+[AGPL-3.0](./LICENSE) — open source, copyleft. You may use, modify, and distribute this software freely. If you run a modified version as a network service, you must make your source code available under the same license.
