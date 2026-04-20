@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: '/scenarios', label: 'Scenarios' },
   { href: '/portfolio', label: 'Portfolio Analysis' },
   { href: '/taxonomy', label: 'Taxonomy' },
+  { href: '/settings', label: 'Settings' },
 ];
 
 export default function Navbar() {

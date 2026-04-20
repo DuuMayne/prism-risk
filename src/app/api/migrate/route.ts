@@ -1,7 +1,8 @@
-import { getDb } from './db';
+import { NextResponse } from 'next/server';
+import { getDb } from '@/lib/db';
+import { seedDatabase } from '@/lib/seed';
 
 const TAXONOMY = [
-  // === Scenario Family (unchanged) ===
   { dimension: 'Scenario Family', code: 'SF01', value: 'Identity compromise', definition: 'Unauthorized acquisition or misuse of identities used to access systems or data', usage_notes: 'Use for portfolio rollups', example: 'Workforce phishing leads to SaaS admin takeover' },
   { dimension: 'Scenario Family', code: 'SF02', value: 'Endpoint compromise', definition: 'Compromise of laptops, workstations, or mobile devices', usage_notes: 'Covers malware, unmanaged devices, local data exposure', example: 'Malware on engineer laptop enables credential theft' },
   { dimension: 'Scenario Family', code: 'SF03', value: 'Cloud / platform misconfiguration', definition: 'Security or resilience loss caused by insecure cloud or SaaS configuration', usage_notes: 'Use when configuration error is primary driver', example: 'Public bucket exposes borrower data' },
@@ -16,8 +17,6 @@ const TAXONOMY = [
   { dimension: 'Scenario Family', code: 'SF12', value: 'Privileged access misuse', definition: 'Misuse of elevated permissions by insider or compromised account', usage_notes: 'Separate from general identity compromise when elevation is central', example: 'Admin account disables logging' },
   { dimension: 'Scenario Family', code: 'SF13', value: 'AI / model governance failure', definition: 'Model, feature, or AI governance weakness causes harmful decisioning or compliance issues', usage_notes: 'Use for decision systems and generative AI use cases', example: 'Model drift harms approval fairness' },
   { dimension: 'Scenario Family', code: 'SF14', value: 'Physical / environmental disruption', definition: 'Facility, utility, or environmental event causes service or people disruption', usage_notes: 'Use when non-digital root cause dominates', example: 'Power loss impacts operations' },
-
-  // === Threat Community (updated) ===
   { dimension: 'Threat Community', code: 'TC01', value: 'External attacker', definition: 'Financially or ideologically motivated external actor targeting systems, data, or credentials', usage_notes: 'Use for phishing, intrusion, ransomware, credential theft campaigns', example: 'Credential stuffing attack against customer portal' },
   { dimension: 'Threat Community', code: 'TC02', value: 'Organized fraud ring', definition: 'Coordinated group executing systematic fraud schemes at scale', usage_notes: 'Use when multiple actors work together in a structured operation', example: 'Ring submitting hundreds of synthetic identity applications' },
   { dimension: 'Threat Community', code: 'TC03', value: 'First-party fraud applicant', definition: 'Individual applicant misrepresenting their own information for financial gain', usage_notes: 'Use for income inflation, straw borrowers, bust-out schemes', example: 'Applicant inflates income to qualify for larger loan' },
@@ -31,8 +30,6 @@ const TAXONOMY = [
   { dimension: 'Threat Community', code: 'TC11', value: 'Customer / borrower', definition: 'End customer or borrower whose actions (intentional or inadvertent) create operational or financial loss', usage_notes: 'Use for dispute abuse, payment fraud, or customer-driven data loss scenarios', example: 'Borrower disputes legitimate ACH debit causing chargeback cascade' },
   { dimension: 'Threat Community', code: 'TC12', value: 'Process failure', definition: 'Breakdown in defined business processes, procedures, or human workflows without a specific threat actor', usage_notes: 'Use when no individual is at fault; the process design or execution failed', example: 'Reconciliation step skipped due to ambiguous runbook' },
   { dimension: 'Threat Community', code: 'TC13', value: 'System failure', definition: 'Hardware, software, or infrastructure fault that causes loss without human action as a trigger', usage_notes: 'Use for hardware failures, software bugs, capacity exhaustion, data corruption', example: 'Database replication lag causes stale data in servicing decisions' },
-
-  // === Threat Action (updated) ===
   { dimension: 'Threat Action', code: 'TA01', value: 'Phishing / credential harvesting', definition: 'Social engineering or technical attack to steal authentication credentials', usage_notes: 'Includes email phishing, SMS, voice, adversary-in-the-middle proxy attacks', example: 'Targeted phishing email with fake SSO login page' },
   { dimension: 'Threat Action', code: 'TA02', value: 'Account takeover', definition: 'Unauthorized access to and control of a legitimate user account', usage_notes: 'Use as the action when credential compromise leads to account control', example: 'Attacker uses leaked credentials to access servicing admin panel' },
   { dimension: 'Threat Action', code: 'TA03', value: 'Privilege misuse', definition: 'Use of legitimately granted elevated permissions for unauthorized purposes', usage_notes: 'Covers both intentional abuse and accidental over-reach of privilege', example: 'Admin queries production PII outside of job function' },
@@ -51,8 +48,6 @@ const TAXONOMY = [
   { dimension: 'Threat Action', code: 'TA16', value: 'Income / employment misrepresentation', definition: 'Falsification of income, employment status, or financial position in loan applications', usage_notes: 'Use for stated income fraud, fake pay stubs, inflated bank statements', example: 'Applicant submits doctored bank statements showing 3x actual income' },
   { dimension: 'Threat Action', code: 'TA17', value: 'Document forgery / verification evasion', definition: 'Creation or modification of documents to pass identity, income, or asset verification controls', usage_notes: 'Use when document fraud is the primary method of bypassing controls', example: 'Forged utility bill used to satisfy address verification requirement' },
   { dimension: 'Threat Action', code: 'TA18', value: 'Payment diversion', definition: 'Redirecting loan disbursements, customer payments, or internal transfers to unauthorized accounts', usage_notes: 'Use for BEC, ACH redirect fraud, and disbursement manipulation', example: 'BEC attack changes wire instructions for closing funds' },
-
-  // === Loss Event Family (updated - 2 new entries) ===
   { dimension: 'Loss Event Family', code: 'LE01', value: 'Confidentiality loss', definition: 'Unauthorized disclosure or access to protected information', usage_notes: 'Map to privacy, contractual, and trust impacts', example: 'PII exposed' },
   { dimension: 'Loss Event Family', code: 'LE02', value: 'Integrity loss', definition: 'Unauthorized or erroneous alteration of data, code, or decisions', usage_notes: 'Map to decision quality and financial downstream effects', example: 'Incorrect loan status data' },
   { dimension: 'Loss Event Family', code: 'LE03', value: 'Availability loss', definition: 'Service or process unavailable or materially degraded', usage_notes: 'Map to downtime and operational disruption', example: 'Origination service outage' },
@@ -60,8 +55,6 @@ const TAXONOMY = [
   { dimension: 'Loss Event Family', code: 'LE05', value: 'Compliance / obligation failure', definition: 'Failure to meet legal, regulatory, or contractual obligations', usage_notes: 'Map to notices, fines, remediation, monitorship', example: 'Missed notice deadline' },
   { dimension: 'Loss Event Family', code: 'LE06', value: 'Third-party / dependency failure', definition: 'Loss event driven by the failure of an external provider or critical dependency', usage_notes: 'Use when loss stems from vendor/partner inability to perform, not internal failure', example: 'Payment processor outage prevents disbursements' },
   { dimension: 'Loss Event Family', code: 'LE07', value: 'Operational process failure', definition: 'Loss event caused by breakdown in internal business processes without external threat actor involvement', usage_notes: 'Use when the root cause is procedural or workflow-based rather than technical or adversarial', example: 'Manual reconciliation error causes duplicate payments' },
-
-  // === Loss Forms (updated - 12 entries) ===
   { dimension: 'Loss Form', code: 'LF01', value: 'Technology restoration / rebuild cost', definition: 'Cost to restore, rebuild, or replace compromised or failed technology systems', usage_notes: 'Includes infrastructure rebuild, data restoration, system re-deployment, emergency vendor support', example: 'Emergency rebuild of compromised servicing environment' },
   { dimension: 'Loss Form', code: 'LF02', value: 'Model remediation / re-underwriting cost', definition: 'Cost to remediate flawed models, re-underwrite affected loans, or correct decisioning errors', usage_notes: 'Use for model revalidation, portfolio re-scoring, manual re-review of affected decisions', example: 'Re-underwriting 2,000 loans after model drift discovered' },
   { dimension: 'Loss Form', code: 'LF03', value: 'Contractual liability / partner indemnification', definition: 'Financial obligation arising from breach of contract, SLA failure, or partner indemnification clauses', usage_notes: 'Use for warehouse facility breaches, investor putback risk, partner SLA penalties', example: 'Investor putback demand due to rep and warranty breach' },
@@ -74,8 +67,6 @@ const TAXONOMY = [
   { dimension: 'Loss Form', code: 'LF10', value: 'Revenue loss from servicing disruption', definition: 'Lost fee income, late payment revenue, or servicing transfer penalties from service interruption', usage_notes: 'Use when servicing operations are disrupted, causing missed collections or fee loss', example: 'Missed autopay processing window causes 5-day revenue delay' },
   { dimension: 'Loss Form', code: 'LF11', value: 'Revenue loss from origination disruption', definition: 'Lost loan volume, rate lock expirations, or pipeline fallout from origination system downtime', usage_notes: 'Use when origination or application processing is interrupted', example: 'Two-day origination outage causes $15M pipeline fallout' },
   { dimension: 'Loss Form', code: 'LF12', value: 'Fraud loss / unrecoverable funds', definition: 'Direct financial loss from fraud that cannot be recovered through collections or insurance', usage_notes: 'Use for net charge-offs, unrecoverable disbursements, and write-downs', example: 'Synthetic identity ring causes $2M in charge-offs before detection' },
-
-  // === Control Type (unchanged) ===
   { dimension: 'Control Type', code: 'CT01', value: 'Preventive', definition: 'Reduces event occurrence or successful compromise rate', usage_notes: 'Example: MFA, secure defaults', example: 'MFA' },
   { dimension: 'Control Type', code: 'CT02', value: 'Detective', definition: 'Improves discovery and reduces dwell time', usage_notes: 'Example: logging, alerting', example: 'SIEM detection' },
   { dimension: 'Control Type', code: 'CT03', value: 'Corrective', definition: 'Restores secure or normal state after event', usage_notes: 'Example: patching, account disablement', example: 'Credential reset playbook' },
@@ -83,82 +74,95 @@ const TAXONOMY = [
   { dimension: 'Control Type', code: 'CT05', value: 'Governance / assurance', definition: 'Improves process quality and oversight', usage_notes: 'Example: reviews, attestations, standards', example: 'Quarterly access review' },
 ];
 
-const SEED_SCENARIO = {
-  id: 'SCN-0001',
-  scenario_family: 'Identity compromise',
-  scenario_title: '[EXAMPLE] Workforce IdP admin account takeover',
-  scenario_pattern: 'Phishing-driven workforce admin account takeover',
-  scenario_statement: 'External criminal uses social engineering to compromise a workforce identity provider administrator account, enabling unauthorized access to borrower servicing data and elevated system control.',
-  threat_community: 'External attacker',
-  threat_action: 'Phishing / credential harvesting',
-  loss_event_type: 'Confidentiality loss',
-  affected_asset_or_service: 'Identity provider and servicing admin consoles',
-  business_process: 'Loan Servicing',
-  loss_forms: 'Incident response and investigation cost; Reputation / brand harm; Operational backlog and productivity loss; Revenue loss from servicing disruption; Fraud loss / unrecoverable funds',
-  existing_controls: 'SSO, MFA, phishing-resistant MFA for admins, anomaly detection, PAM, centralized logging',
-  control_gaps_or_assumptions: 'Assumes one privileged admin is successfully phished and persistence is limited to less than 24 hours before containment.',
-  data_quality: 'Low',
-  input_sources: 'Internal incident trends, phishing exercise results, IAM control assessment, SME judgment',
-  owner: 'John Cyberman',
-  treatment_status: 'Assessing',
-  time_horizon_months: 12,
-  tef_low: 2, tef_ml: 6, tef_high: 18,
-  vuln_low: 0.05, vuln_ml: 0.15, vuln_high: 0.35,
-  primary_loss_low: 25000, primary_loss_ml: 150000, primary_loss_high: 1200000,
-  secondary_event_prob: 0.20,
-  secondary_loss_low: 0, secondary_loss_ml: 300000, secondary_loss_high: 5000000,
-  quant_readiness: 'Seeded',
-  review_cadence: 'Quarterly',
-};
-
-export function seedDatabase() {
+export async function POST() {
+  seedDatabase();
   const db = getDb();
 
-  const taxCount = db.prepare('SELECT COUNT(*) as count FROM taxonomy').get() as { count: number };
-  if (taxCount.count === 0) {
-    const insert = db.prepare(
-      'INSERT INTO taxonomy (dimension, code, value, definition, usage_notes, example) VALUES (?, ?, ?, ?, ?, ?)'
-    );
-    const tx = db.transaction(() => {
-      for (const t of TAXONOMY) {
-        insert.run(t.dimension, t.code, t.value, t.definition || null, t.usage_notes || null, t.example || null);
-      }
-    });
-    tx();
+  const results: string[] = [];
+
+  // Upsert taxonomy
+  const upsert = db.prepare(`
+    INSERT INTO taxonomy (dimension, code, value, definition, usage_notes, example)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(code) DO UPDATE SET
+      dimension = excluded.dimension,
+      value = excluded.value,
+      definition = excluded.definition,
+      usage_notes = excluded.usage_notes,
+      example = excluded.example
+  `);
+
+  const taxonomyTx = db.transaction(() => {
+    for (const t of TAXONOMY) {
+      upsert.run(t.dimension, t.code, t.value, t.definition || null, t.usage_notes || null, t.example || null);
+    }
+  });
+  taxonomyTx();
+  results.push(`Upserted ${TAXONOMY.length} taxonomy entries`);
+
+  // Remove obsolete taxonomy
+  const currentCodes = TAXONOMY.map((t) => t.code);
+  const existing = db.prepare('SELECT code FROM taxonomy').all() as { code: string }[];
+  const toRemove = existing.filter((e) => !currentCodes.includes(e.code));
+  if (toRemove.length > 0) {
+    const deleteStmt = db.prepare('DELETE FROM taxonomy WHERE code = ?');
+    db.transaction(() => {
+      for (const entry of toRemove) deleteStmt.run(entry.code);
+    })();
+    results.push(`Removed ${toRemove.length} obsolete entries: ${toRemove.map((e) => e.code).join(', ')}`);
   }
 
-  const SEED_SCENARIO_2 = {
-    id: 'SCN-0002',
-    scenario_family: 'Fraud / abuse',
-    scenario_title: '[EXAMPLE] Synthetic identity fraud in origination',
-    scenario_pattern: 'Organized fraud ring uses synthetic identities to obtain loans',
-    scenario_statement: 'An organized fraud ring creates synthetic identities combining real and fabricated identity elements to submit fraudulent loan applications, resulting in funded loans that default within 6 months.',
-    threat_community: 'Organized fraud ring',
-    threat_action: 'Synthetic identity creation',
-    loss_event_type: 'Fraud loss',
-    affected_asset_or_service: 'Loan origination platform and identity verification services',
-    business_process: 'Loan Origination',
-    loss_forms: 'Fraud loss / unrecoverable funds; Incident response and investigation cost; Model remediation / re-underwriting cost; Regulatory response and examination cost',
-    existing_controls: 'Identity verification (KYC), credit bureau checks, fraud scoring model, velocity rules, manual review queue for high-risk applications',
-    control_gaps_or_assumptions: 'Assumes fraud ring has built credit history over 12+ months before bust-out. Current model does not detect slow-build synthetic profiles well.',
-    data_quality: 'Medium',
-    input_sources: 'Fraud operations data, charge-off analysis, industry benchmarks, model performance metrics',
-    owner: 'Fraud Operations',
-    treatment_status: 'Mitigating',
-    time_horizon_months: 12,
-    tef_low: 10, tef_ml: 30, tef_high: 80,
-    vuln_low: 0.02, vuln_ml: 0.08, vuln_high: 0.15,
-    primary_loss_low: 15000, primary_loss_ml: 45000, primary_loss_high: 120000,
-    secondary_event_prob: 0.10,
-    secondary_loss_low: 50000, secondary_loss_ml: 200000, secondary_loss_high: 1500000,
-    quant_readiness: 'Quantified',
-    review_cadence: 'Quarterly',
-  };
+  // Mark seed scenario
+  const seed = db.prepare("SELECT id, scenario_title FROM scenarios WHERE id = 'SCN-0001'").get() as { id: string; scenario_title: string } | undefined;
+  if (seed && !seed.scenario_title.startsWith('[EXAMPLE]')) {
+    db.prepare("UPDATE scenarios SET scenario_title = ? WHERE id = 'SCN-0001'").run(`[EXAMPLE] ${seed.scenario_title}`);
+    results.push('Marked SCN-0001 as [EXAMPLE]');
+  }
 
-  const scnCount = db.prepare('SELECT COUNT(*) as count FROM scenarios').get() as { count: number };
-  if (scnCount.count === 0) {
-    const scenarios = [SEED_SCENARIO, SEED_SCENARIO_2];
-    const insertStmt = db.prepare(`INSERT INTO scenarios (
+  // Update seed scenario taxonomy refs
+  if (seed) {
+    db.prepare(`UPDATE scenarios SET
+      threat_community = 'External attacker',
+      threat_action = 'Phishing / credential harvesting',
+      loss_forms = 'Incident response and investigation cost; Reputation / brand harm; Operational backlog and productivity loss; Revenue loss from servicing disruption; Fraud loss / unrecoverable funds'
+    WHERE id = 'SCN-0001'`).run();
+    results.push('Updated SCN-0001 taxonomy references');
+  }
+
+  // Insert second example scenario if missing
+  const scn2 = db.prepare("SELECT id FROM scenarios WHERE id = 'SCN-0002'").get();
+  if (!scn2) {
+    const s2 = {
+      id: 'SCN-0002',
+      scenario_family: 'Fraud / abuse',
+      scenario_title: '[EXAMPLE] Synthetic identity fraud in origination',
+      scenario_pattern: 'Organized fraud ring uses synthetic identities to obtain loans',
+      scenario_statement: 'An organized fraud ring creates synthetic identities combining real and fabricated identity elements to submit fraudulent loan applications, resulting in funded loans that default within 6 months.',
+      threat_community: 'Organized fraud ring',
+      threat_action: 'Synthetic identity creation',
+      loss_event_type: 'Fraud loss',
+      affected_asset_or_service: 'Loan origination platform and identity verification services',
+      business_process: 'Loan Origination',
+      loss_forms: 'Fraud loss / unrecoverable funds; Incident response and investigation cost; Model remediation / re-underwriting cost; Regulatory response and examination cost',
+      existing_controls: 'Identity verification (KYC), credit bureau checks, fraud scoring model, velocity rules, manual review queue for high-risk applications',
+      control_gaps_or_assumptions: 'Assumes fraud ring has built credit history over 12+ months before bust-out. Current model does not detect slow-build synthetic profiles well.',
+      data_quality: 'Medium',
+      input_sources: 'Fraud operations data, charge-off analysis, industry benchmarks, model performance metrics',
+      owner: 'Fraud Operations',
+      treatment_status: 'Mitigating',
+      time_horizon_months: 12,
+      tef_low: 10, tef_ml: 30, tef_high: 80,
+      vuln_low: 0.02, vuln_ml: 0.08, vuln_high: 0.15,
+      primary_loss_low: 15000, primary_loss_ml: 45000, primary_loss_high: 120000,
+      secondary_event_prob: 0.10,
+      secondary_loss_low: 50000, secondary_loss_ml: 200000, secondary_loss_high: 1500000,
+      quant_readiness: 'Quantified',
+      review_cadence: 'Quarterly',
+    };
+    const aleLow = (s2.tef_low * s2.vuln_low) * (s2.primary_loss_low + s2.secondary_event_prob * s2.secondary_loss_low);
+    const aleMl = (s2.tef_ml * s2.vuln_ml) * (s2.primary_loss_ml + s2.secondary_event_prob * s2.secondary_loss_ml);
+    const aleHigh = (s2.tef_high * s2.vuln_high) * (s2.primary_loss_high + s2.secondary_event_prob * s2.secondary_loss_high);
+    db.prepare(`INSERT INTO scenarios (
       id, scenario_family, scenario_title, scenario_pattern, scenario_statement,
       threat_community, threat_action, loss_event_type, affected_asset_or_service,
       business_process, loss_forms, existing_controls, control_gaps_or_assumptions,
@@ -167,29 +171,27 @@ export function seedDatabase() {
       primary_loss_low, primary_loss_ml, primary_loss_high,
       secondary_event_prob, secondary_loss_low, secondary_loss_ml, secondary_loss_high,
       ale_low_bound, ale_ml_bound, ale_high_bound, quant_readiness, review_cadence
-    ) VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-    )`);
-
-    const tx = db.transaction(() => {
-      for (const s of scenarios) {
-        const aleLow = (s.tef_low * s.vuln_low) * (s.primary_loss_low + s.secondary_event_prob * s.secondary_loss_low);
-        const aleMl = (s.tef_ml * s.vuln_ml) * (s.primary_loss_ml + s.secondary_event_prob * s.secondary_loss_ml);
-        const aleHigh = (s.tef_high * s.vuln_high) * (s.primary_loss_high + s.secondary_event_prob * s.secondary_loss_high);
-
-        insertStmt.run(
-          s.id, s.scenario_family, s.scenario_title, s.scenario_pattern, s.scenario_statement,
-          s.threat_community, s.threat_action, s.loss_event_type, s.affected_asset_or_service,
-          s.business_process, s.loss_forms, s.existing_controls, s.control_gaps_or_assumptions,
-          s.data_quality, s.input_sources, s.owner, s.treatment_status, s.time_horizon_months,
-          s.tef_low, s.tef_ml, s.tef_high, s.vuln_low, s.vuln_ml, s.vuln_high,
-          s.primary_loss_low, s.primary_loss_ml, s.primary_loss_high,
-          s.secondary_event_prob, s.secondary_loss_low, s.secondary_loss_ml, s.secondary_loss_high,
-          aleLow, aleMl, aleHigh, s.quant_readiness, s.review_cadence
-        );
-      }
-    });
-    tx();
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      s2.id, s2.scenario_family, s2.scenario_title, s2.scenario_pattern, s2.scenario_statement,
+      s2.threat_community, s2.threat_action, s2.loss_event_type, s2.affected_asset_or_service,
+      s2.business_process, s2.loss_forms, s2.existing_controls, s2.control_gaps_or_assumptions,
+      s2.data_quality, s2.input_sources, s2.owner, s2.treatment_status, s2.time_horizon_months,
+      s2.tef_low, s2.tef_ml, s2.tef_high, s2.vuln_low, s2.vuln_ml, s2.vuln_high,
+      s2.primary_loss_low, s2.primary_loss_ml, s2.primary_loss_high,
+      s2.secondary_event_prob, s2.secondary_loss_low, s2.secondary_loss_ml, s2.secondary_loss_high,
+      aleLow, aleMl, aleHigh, s2.quant_readiness, s2.review_cadence
+    );
+    results.push('Added example scenario SCN-0002 (Synthetic identity fraud)');
   }
+
+  // Get final counts
+  const taxCount = (db.prepare('SELECT COUNT(*) as c FROM taxonomy').get() as { c: number }).c;
+  const scnCount = (db.prepare('SELECT COUNT(*) as c FROM scenarios').get() as { c: number }).c;
+  const treatCount = (db.prepare('SELECT COUNT(*) as c FROM treatments').get() as { c: number }).c;
+
+  return NextResponse.json({
+    success: true,
+    results,
+    counts: { taxonomy: taxCount, scenarios: scnCount, treatments: treatCount },
+  });
 }
