@@ -100,10 +100,6 @@ Your scenarios and treatments are always preserved during updates.
 - **Recharts** — data visualization
 - **Client-side Monte Carlo** — instant simulation, no server dependency
 
-## Documentation
-
-See [WORKFLOW.md](./WORKFLOW.md) for the full development process and architecture decisions.
-
 ## License
 
 [Apache 2.0 with Commons Clause](./LICENSE)
