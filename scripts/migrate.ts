@@ -9,7 +9,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'fair-risk.db');
+const DB_PATH = path.join(process.cwd(), 'data', 'prism.db');
 
 if (!fs.existsSync(DB_PATH)) {
   console.log('No database found at', DB_PATH);
@@ -41,7 +41,7 @@ const TAXONOMY = [
   { dimension: 'Scenario Family', code: 'SF10', value: 'Regulatory obligation failure', definition: 'Failure to meet legal, regulatory, or contractual requirements', usage_notes: 'Use when non-compliance is dominant loss event', example: 'Missed statutory notice requirement' },
   { dimension: 'Scenario Family', code: 'SF11', value: 'Change / release failure', definition: 'Bad change, deployment, or configuration release causes loss', usage_notes: 'Use for SDLC / DevOps induced incidents', example: 'Bad release causes origination outage' },
   { dimension: 'Scenario Family', code: 'SF12', value: 'Privileged access misuse', definition: 'Misuse of elevated permissions by insider or compromised account', usage_notes: 'Separate from general identity compromise when elevation is central', example: 'Admin account disables logging' },
-  { dimension: 'Scenario Family', code: 'SF13', value: 'AI / model governance failure', definition: 'Model, feature, or AI governance weakness causes harmful decisioning or compliance issues', usage_notes: 'Use for decision systems and generative AI use cases', example: 'Model drift harms approval fairness' },
+  { dimension: 'Scenario Family', code: 'SF13', value: 'AI / model governance failure', definition: 'Model, feature, or AI governance weakness causes harmful decisioning or compliance issues', usage_notes: 'Use for decision systems and generative AI use cases', example: 'Model drift harms approval accuracy' },
   { dimension: 'Scenario Family', code: 'SF14', value: 'Physical / environmental disruption', definition: 'Facility, utility, or environmental event causes service or people disruption', usage_notes: 'Use when non-digital root cause dominates', example: 'Power loss impacts operations' },
 
   // Threat Community (updated)

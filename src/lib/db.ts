@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'fair-risk.db');
+const DB_PATH = path.join(process.cwd(), 'data', 'prism.db');
 
 let db: Database.Database | null = null;
 

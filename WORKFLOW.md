@@ -113,7 +113,7 @@ src/
 ## Running Locally
 
 ```bash
-cd /Users/adamduman/Projects/fair-risk-app
+cd /path/to/prism-risk
 npm install
 npm run dev
 # Open http://localhost:3000

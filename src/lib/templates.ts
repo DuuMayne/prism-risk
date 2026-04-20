@@ -238,7 +238,7 @@ export const SCENARIO_TEMPLATES: ScenarioTemplate[] = [
   },
   {
     id: 'tmpl-model-drift',
-    name: 'AI/ML Model Drift Causes Unfair Outcomes',
+    name: 'AI/ML Model Drift Causes Biased Outcomes',
     description: 'A credit or fraud model drifts from its validated state, producing biased or inaccurate decisions at scale.',
     category: 'AI & Model Risk',
     scenario_family: 'AI / model governance failure',
@@ -248,7 +248,7 @@ export const SCENARIO_TEMPLATES: ScenarioTemplate[] = [
     threat_action: 'Misconfiguration',
     loss_event_type: 'Compliance / obligation failure',
     loss_forms: 'Model remediation / re-underwriting cost; Fines, penalties, and settlements; Customer reimbursement / restitution; Regulatory response and examination cost',
-    existing_controls_hint: 'Model monitoring dashboards, performance drift alerts, quarterly model validation, fair lending testing, model governance committee',
+    existing_controls_hint: 'Model monitoring dashboards, performance drift alerts, quarterly model validation, bias testing, model governance committee',
     tef_low: 1, tef_ml: 2, tef_high: 5,
     vuln_low: 0.10, vuln_ml: 0.25, vuln_high: 0.50,
     primary_loss_low: 50000, primary_loss_ml: 250000, primary_loss_high: 1000000,
