@@ -6,6 +6,12 @@
 
 A quantitative risk management application. PRISM replaces spreadsheet-based risk registers with an interactive tool for scenario modeling, Monte Carlo simulation, and treatment comparison.
 
+## Why This Exists
+
+The standard approach to risk management in most organizations is a spreadsheet with a 5x5 matrix: likelihood on one axis, impact on the other, colors in the cells. It tells leadership almost nothing actionable — "high likelihood, high impact" doesn't answer "should we spend $200K on this control?" or "which of these three risks should we address first?"
+
+PRISM was built by a GRC practitioner who wanted to bring quantitative rigor to risk conversations without requiring a statistics degree. It uses Monte Carlo simulation to model loss distributions, lets you compare treatment options against the baseline, and generates decision-ready framing that translates probability distributions into language a CISO or board member can act on. The guided quantification flow means you don't need to know what a log-normal distribution is — you answer plain-language questions about how often something happens and how bad it gets, and the math runs behind the scenes.
+
 ## Features
 
 - **Scenario Register** — Create and manage risk scenarios with structured taxonomy classification
@@ -125,6 +131,12 @@ Your scenarios and treatments are always preserved during updates.
 - **Tailwind CSS** — styling
 - **Recharts** — data visualization
 - **Client-side Monte Carlo** — instant simulation, no server dependency
+
+## Development
+
+Designed, spec'd, and directed by a security/compliance practitioner. AI-assisted implementation using [Claude Code](https://claude.ai/code).
+
+The risk modeling methodology, scenario taxonomy, guided quantification flow, and treatment comparison logic come from real-world risk management practice. The 25 scenario templates reflect actual risk patterns encountered across SaaS, cloud infrastructure, and enterprise environments. The implementation was accelerated with AI tooling, but the risk framework and decision-framing approach reflect practitioner judgment about what makes risk analysis useful rather than academic.
 
 ## License
 
