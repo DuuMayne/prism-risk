@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/remediation', label: 'Remediation' },
   { href: '/portfolio', label: 'Portfolio Analysis' },
   { href: '/taxonomy', label: 'Taxonomy' },
+  { href: '/methodology', label: 'Methodology' },
   { href: '/settings', label: 'Settings' },
 ];
 

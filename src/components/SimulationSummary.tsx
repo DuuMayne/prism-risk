@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { SimulationSummary as SummaryType } from '@/lib/monte-carlo';
+import Tooltip, { InfoIcon } from '@/components/Tooltip';
 
 function fmt(val: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
@@ -119,20 +120,32 @@ export default function SimulationSummaryPanel({
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
                 {[
-                  { label: 'Mean Annual Loss', cur: summary.mean_annual_loss, tre: comparisonSummary?.mean_annual_loss },
-                  { label: 'Median Annual Loss', cur: summary.median_annual_loss, tre: comparisonSummary?.median_annual_loss },
-                  { label: 'P90 Annual Loss', cur: summary.p90_annual_loss, tre: comparisonSummary?.p90_annual_loss },
-                  { label: 'P95 Annual Loss', cur: summary.p95_annual_loss, tre: comparisonSummary?.p95_annual_loss },
-                  { label: 'Mean Loss Events/Year', cur: summary.mean_lef, tre: comparisonSummary?.mean_lef, isCurrency: false, precision: 2 },
-                  { label: 'Mean Loss per Event', cur: summary.mean_total_loss, tre: comparisonSummary?.mean_total_loss },
-                  { label: 'Mean Secondary Loss (when triggered)', cur: summary.mean_secondary_loss_when_triggered, tre: comparisonSummary?.mean_secondary_loss_when_triggered },
+                  { label: 'Mean Annual Loss', cur: summary.mean_annual_loss, tre: comparisonSummary?.mean_annual_loss,
+                    tip: 'Average loss across all 1,000 simulated years. Best metric for budgeting and ROI calculations. Pulled upward by expensive tail events.' },
+                  { label: 'Median Annual Loss', cur: summary.median_annual_loss, tre: comparisonSummary?.median_annual_loss,
+                    tip: 'The midpoint: half of simulated years cost less, half cost more. Represents what a "typical" year looks like. When much lower than the mean, tail events are driving the average.' },
+                  { label: 'P90 Annual Loss', cur: summary.p90_annual_loss, tre: comparisonSummary?.p90_annual_loss,
+                    tip: '90th percentile: 90% of simulated years cost less than this. Captures the start of the "bad tail" — the boundary between normal and elevated loss years.' },
+                  { label: 'P95 Annual Loss', cur: summary.p95_annual_loss, tre: comparisonSummary?.p95_annual_loss,
+                    tip: '95th percentile: only 5% of simulated years exceed this. Common benchmark for worst-case planning, insurance sizing, and capital reserves.' },
+                  { label: 'Mean Loss Events/Year', cur: summary.mean_lef, tre: comparisonSummary?.mean_lef, isCurrency: false, precision: 2,
+                    tip: 'Average number of actual loss events per year (TEF x Vulnerability). Separates "how often" from "how much" — if this is high, frequency-reducing controls matter most.' },
+                  { label: 'Mean Loss per Event', cur: summary.mean_total_loss, tre: comparisonSummary?.mean_total_loss,
+                    tip: 'Average cost when a loss event occurs (primary + secondary). If this is high relative to frequency, magnitude-reducing controls (containment, backups) matter most.' },
+                  { label: 'Mean Secondary Loss (when triggered)', cur: summary.mean_secondary_loss_when_triggered, tre: comparisonSummary?.mean_secondary_loss_when_triggered,
+                    tip: 'Average downstream cost (fines, lawsuits, reputation) in iterations where secondary losses actually triggered. Shows the cost of escalation when things go sideways.' },
                 ].map((row) => {
                   const isCurrency = row.isCurrency !== false;
                   const fmtVal = (v: number) => isCurrency ? fmt(v) : v.toFixed(row.precision ?? 0);
                   const change = row.tre !== undefined ? row.cur - row.tre : undefined;
                   return (
                     <tr key={row.label}>
-                      <td className="py-2 text-[var(--muted)]">{row.label}</td>
+                      <td className="py-2 text-[var(--muted)]">
+                        <span className="flex items-center gap-1.5">
+                          {row.label}
+                          {row.tip && <Tooltip content={row.tip}><InfoIcon /></Tooltip>}
+                        </span>
+                      </td>
                       <td className="py-2 text-right font-mono">{fmtVal(row.cur)}</td>
                       {isComparison && <td className="py-2 text-right font-mono">{row.tre !== undefined ? fmtVal(row.tre) : '-'}</td>}
                       {isComparison && change !== undefined && (

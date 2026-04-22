@@ -61,21 +61,27 @@ export default function MonteCarloChart({
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-1">
-        <h3 className="text-sm font-semibold">Loss Exceedance Distribution</h3>
+        <h3 className="text-sm font-semibold">Annual Loss Distribution</h3>
         <div className="flex items-center gap-4 text-xs text-[var(--muted)]">
           <span className="flex items-center gap-1">
             <span className="inline-block w-3 h-3 rounded-sm bg-blue-400 opacity-70" /> Current State
           </span>
           {comparisonResult && (
             <span className="flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm bg-emerald-400 opacity-70" /> Treated State
+              <span className="inline-block w-3 h-3 rounded-sm bg-emerald-400 opacity-70" /> After Treatment
             </span>
           )}
         </div>
       </div>
       <p className="text-xs text-[var(--muted)] mb-4">
-        Each bar shows how many of 1,000 simulated years produced an annual loss in that range.
-        Taller bars to the right mean more exposure to large losses.
+        Each point on the curve shows how many of the 1,000 simulated years produced an annual loss
+        in that dollar range. A tall peak on the left means most years are lower-cost; a long tail stretching
+        right means some years get expensive.
+        {comparisonResult && (
+          <> The green curve should shift left (lower losses) and shrink on the right (fewer bad years)
+          if the treatment is effective.</>
+        )}
+        {' '}Dashed lines mark key loss thresholds for reference.
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart data={histogram} margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
@@ -89,15 +95,20 @@ export default function MonteCarloChart({
           <Tooltip
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null;
+              const total = 1000;
               return (
                 <div className="bg-white border border-[var(--border)] rounded-lg p-2 shadow-lg text-xs">
-                  <div className="font-medium mb-1">{label}</div>
-                  {payload.map((p) => (
-                    <div key={p.dataKey as string} className="flex justify-between gap-4">
-                      <span style={{ color: p.color }}>{p.dataKey === 'current' ? 'Current' : 'Treated'}:</span>
-                      <span className="font-mono">{p.value} iterations</span>
-                    </div>
-                  ))}
+                  <div className="font-medium mb-1">Annual loss near {label}</div>
+                  {payload.map((p) => {
+                    const count = p.value as number;
+                    const pctOfYears = ((count / total) * 100).toFixed(1);
+                    return (
+                      <div key={p.dataKey as string} className="flex justify-between gap-4">
+                        <span style={{ color: p.color }}>{p.dataKey === 'current' ? 'Current' : 'After treatment'}:</span>
+                        <span className="font-mono">{count} of {total} years ({pctOfYears}%)</span>
+                      </div>
+                    );
+                  })}
                 </div>
               );
             }}

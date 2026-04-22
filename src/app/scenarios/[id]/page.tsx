@@ -9,6 +9,7 @@ import { runSimulation, applyTreatment, SimulationResult, ScenarioInputs } from 
 import MonteCarloChart from '@/components/MonteCarloChart';
 import SimulationSummaryPanel from '@/components/SimulationSummary';
 import DecisionFraming from '@/components/DecisionFraming';
+import MethodologyExplainer from '@/components/MethodologyExplainer';
 import TreatmentForm from '@/components/TreatmentForm';
 import RelatedScenarios from '@/components/RelatedScenarios';
 
@@ -344,6 +345,8 @@ export default function ScenarioDetailPage({ params }: { params: Promise<{ id: s
                 )}
               </div>
 
+              <MethodologyExplainer mode="simulation" />
+
               {simResult && !treatedResult && (
                 <>
                   <MonteCarloChart result={simResult} />
@@ -433,6 +436,8 @@ export default function ScenarioDetailPage({ params }: { params: Promise<{ id: s
                   <p>No treatments defined yet. Add a treatment to compare its impact via Monte Carlo simulation.</p>
                 </div>
               )}
+
+              <MethodologyExplainer mode="treatment" />
 
               {simResult && treatedResult && selectedTreatment && (
                 <div className="space-y-4">

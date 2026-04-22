@@ -85,20 +85,19 @@ function getTreatmentAssessment(
   // Mean loss reduction
   if (meanReduction > 0) {
     const pctReduction = meanReduction / current.mean_annual_loss;
+    const paybackExplanation = paybackYears !== null
+      ? paybackYears < 1 ? `At ${fmt(cost)}, the treatment pays for itself in under a year (${fmt(cost)} cost vs. ${fmtShort(meanReduction)}/yr savings).`
+        : paybackYears < 3 ? `At ${fmt(cost)}, the treatment cost recovers in ~${paybackYears.toFixed(1)} years (${fmt(cost)} / ${fmtShort(meanReduction)} annual savings).`
+        : `At ${fmt(cost)}, the treatment takes ~${paybackYears.toFixed(1)} years to recover from loss reduction alone (${fmt(cost)} / ${fmtShort(meanReduction)} annual savings).`
+      : '';
     findings.push({
       type: 'positive',
-      text: `Expected annual loss drops by ${fmtShort(meanReduction)}/year (${pct(pctReduction)} reduction). ${
-        paybackYears !== null
-          ? paybackYears < 1 ? `Treatment pays for itself in under a year.`
-            : paybackYears < 3 ? `Treatment cost recovers in ~${paybackYears.toFixed(1)} years.`
-            : `Treatment cost takes ~${paybackYears.toFixed(1)} years to recover from loss reduction alone.`
-          : ''
-      }`,
+      text: `Expected annual loss drops from ${fmtShort(current.mean_annual_loss)} to ${fmtShort(treated.mean_annual_loss)} — a ${fmtShort(meanReduction)}/year reduction (${pct(pctReduction)}). This is the average across 1,000 simulated years. ${paybackExplanation}`,
     });
   } else {
     findings.push({
       type: 'negative',
-      text: `Treatment does not reduce expected annual loss. Verify that the reduction percentages are applied to the correct risk factors (frequency, vulnerability, or magnitude).`,
+      text: `Treatment does not reduce expected annual loss (current: ${fmtShort(current.mean_annual_loss)}, treated: ${fmtShort(treated.mean_annual_loss)}). Verify that the reduction percentages target the right risk factors — frequency, vulnerability, or magnitude.`,
     });
   }
 
@@ -107,16 +106,16 @@ function getTreatmentAssessment(
     const tailPctReduction = p95Reduction / current.p95_annual_loss;
     findings.push({
       type: tailPctReduction > 0.2 ? 'positive' : 'caution',
-      text: `P95 (worst-case) drops by ${fmtShort(p95Reduction)} (${pct(tailPctReduction)}). ${
+      text: `Worst-case exposure (P95) drops from ${fmtShort(current.p95_annual_loss)} to ${fmtShort(treated.p95_annual_loss)} — a ${fmtShort(p95Reduction)} reduction (${pct(tailPctReduction)}). P95 means only 5% of simulated years exceed this amount. ${
         tailPctReduction < 0.15
-          ? 'Tail risk remains largely intact -- this treatment primarily helps the average case, not worst-case scenarios.'
-          : 'This meaningfully reduces worst-case exposure.'
+          ? 'The tail barely moves — this treatment helps in typical years but does little for worst-case scenarios. Consider whether the treatment targets frequency (which reduces all years) vs. magnitude (which helps more in bad years).'
+          : 'This meaningfully compresses the worst-case range.'
       }`,
     });
   } else {
     findings.push({
       type: 'negative',
-      text: `P95 exposure does not improve. Tail risk remains at ${fmt(treated.p95_annual_loss)}. Consider whether additional or different controls are needed for catastrophic scenarios.`,
+      text: `Worst-case exposure (P95) does not improve — stays at ${fmt(treated.p95_annual_loss)}. The treatment may reduce average-case frequency without affecting the magnitude of rare, expensive events. Consider controls targeting loss containment or secondary impact prevention.`,
     });
   }
 
@@ -145,7 +144,7 @@ function getTreatmentAssessment(
     if (meanPct > medianPct * 1.5) {
       findings.push({
         type: 'caution',
-        text: `The mean improves more than the median, suggesting the treatment mainly helps in higher-loss scenarios rather than the typical year.`,
+        text: `The average (mean) improves by ${pct(meanPct)} but the typical year (median) only improves by ${pct(medianPct)}. This means the treatment's benefit is concentrated in the more expensive simulated years — it doesn't do much for normal operations but helps when things go wrong. Whether that's good or bad depends on whether you're optimizing for expected cost or worst-case protection.`,
       });
     }
   }
