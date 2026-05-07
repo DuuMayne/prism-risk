@@ -1,0 +1,69 @@
+{
+  "family": "prism",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/prismTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "prism",
+      "image": "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/prism:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "DB_PATH",
+          "value": "/mnt/prism-data/prism.db"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "prism-data",
+          "containerPath": "/mnt/prism-data",
+          "readOnly": false
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/prism",
+          "awslogs-region": "REGION",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 15
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "prism-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "fs-XXXXXXXX",
+        "rootDirectory": "/prism",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "accessPointId": "fsap-XXXXXXXX",
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ]
+}

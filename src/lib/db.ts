@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'prism.db');
+const DB_PATH = process.env.DB_PATH ?? path.join(process.cwd(), 'data', 'prism.db');
 
 let db: Database.Database | null = null;
 
@@ -136,6 +136,17 @@ export function getDb(): Database.Database {
       due_in_days INTEGER NOT NULL,
       escalation_after_days INTEGER NOT NULL,
       UNIQUE(finding_type, severity)
+    );
+
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp TEXT DEFAULT (datetime('now')),
+      action TEXT NOT NULL,
+      resource_type TEXT NOT NULL,
+      resource_id TEXT NOT NULL,
+      actor TEXT,
+      ip_address TEXT,
+      details TEXT
     );
   `);
 
