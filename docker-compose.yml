@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     volumes:
       - prism-data:/app/data
+    environment:
+      - DB_PATH=/app/data/prism.db
     restart: unless-stopped
 
 volumes:
