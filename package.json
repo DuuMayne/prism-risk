@@ -10,8 +10,6 @@
     "migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/uuid": "^10.0.0",
     "better-sqlite3": "^12.9.0",
     "next": "16.2.4",
     "react": "19.2.4",
@@ -20,6 +18,8 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/uuid": "^10.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

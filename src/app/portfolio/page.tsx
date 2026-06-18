@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Scenario } from '@/lib/types';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  Legend, PieChart, Pie, Cell, Treemap,
+  Legend, PieChart, Pie, Cell,
 } from 'recharts';
 
 function fmt(val: number): string {
