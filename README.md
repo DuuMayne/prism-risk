@@ -121,21 +121,26 @@ Click **New Scenario** and choose from 25 pre-built templates organized by categ
 
 | Category | Example templates |
 |---|---|
-| Access & Identity | Unauthorized privileged access, Credential compromise |
-| Ransomware | Ransomware via phishing, Supply chain ransomware |
-| Data Breach | Customer PII exfiltration, Insider data theft |
-| Vendor Risk | Third-party breach, SaaS vendor outage |
-| Infrastructure | Cloud misconfiguration, DDoS disruption |
+| Identity & Access | Admin Account Takeover via Phishing, Privilege Escalation via Over-Provisioned Access |
+| Cyber Attack | Ransomware Attack, Software Supply Chain Compromise |
+| Data Protection | Sensitive Data Sent to Wrong Recipient, Data Retention Violation |
+| Third Party | Critical Vendor Service Outage, Third-Party Data Breach |
+| Cloud & Infrastructure | Cloud Storage Misconfiguration Exposes Data, Infrastructure Drift from Secure Baseline |
+| Fraud | Synthetic Identity Fraud, Business Email Compromise |
+| Compliance | Missed Regulatory Filing or Notice, Privacy Consent or Notice Violation |
+| AI & Model Risk | AI/ML Model Drift Causes Biased Outcomes, Generative AI Data Leakage |
 
 Starting from a template pre-fills the description and suggested impact ranges — edit them to match your organization.
 
 ### Quantifying the risk
 
-PRISM asks you three questions in plain language:
+PRISM uses guided quantification to walk you through estimating frequency, vulnerability, and impact — answering plain-language questions that map to the underlying FAIR model:
 
-1. **How often could this happen?** Enter a range: "between 0.1 and 0.5 times per year" (meaning once every 2–10 years)
-2. **If it does happen, what's the minimum financial impact?** In dollars
-3. **What's the maximum realistic impact?** In dollars
+1. **Threat Event Frequency (TEF):** How often could this threat be attempted? (low, most likely, high)
+2. **Vulnerability:** If the threat occurs, how likely is it to succeed given your controls? (low, most likely, high)
+3. **Primary Loss:** What's the direct financial impact if the event succeeds? (low, most likely, high)
+4. **Secondary Event Probability:** How likely is a secondary event (e.g., regulatory action, lawsuit)?
+5. **Secondary Loss:** What's the financial impact of that secondary event? (low, most likely, high)
 
 PRISM uses these ranges — not single point estimates — to run simulations. This captures uncertainty honestly rather than pretending you know the exact number.
 
@@ -143,22 +148,22 @@ PRISM uses these ranges — not single point estimates — to run simulations. T
 
 Click **Run Simulation**. PRISM runs 1,000 scenarios in your browser using your input ranges and displays:
 - The distribution curve of outcomes
-- 10th, 50th, and 90th percentile loss values
+- Median, 90th percentile, and 95th percentile loss values, plus mean annual loss
 - Annualized Loss Expectancy (ALE)
 
 ---
 
 ## 5. Understanding simulation results
 
-After running a simulation you'll see three key numbers:
+After running a simulation you'll see four key numbers:
 
-**10th percentile (best case):** In 90% of simulated years, the loss from this scenario would be *at least* this much. Think of it as your floor.
+**Mean annual loss:** The statistical average across all simulated years. Useful for comparing scenarios against each other and for budgeting.
 
-**50th percentile (median):** The midpoint — half the simulations produced more than this, half produced less. A good "expected" number for planning.
+**Median (50th percentile):** The midpoint — half the simulations produced more than this, half produced less. A good "expected" number for planning.
 
 **90th percentile (worst case planning):** In 10% of simulated years, losses could reach this level or higher. Use this for insurance and budget conversations.
 
-**Annualized Loss Expectancy (ALE):** The statistical average annual loss. Calculated as (probability of occurrence × expected impact). Useful for comparing scenarios against each other.
+**95th percentile (tail risk):** Only 5% of simulated years exceed this level. Use this for stress testing and catastrophic risk planning.
 
 The curve shape tells you how uncertain the scenario is — a wide, flat curve means high uncertainty; a narrow, peaked curve means your estimates are tight.
 
@@ -241,11 +246,11 @@ npm run migrate
 
 ### Project structure
 ```
-app/           — Next.js App Router pages and API routes
-components/    — React components including simulation charts
-lib/           — Monte Carlo engine, database access
-scripts/       — Migration scripts
-data/          — SQLite database file
+src/app/           — Next.js App Router pages and API routes
+src/components/    — React components including simulation charts
+src/lib/           — Monte Carlo engine, database access
+scripts/           — Migration scripts
+data/              — SQLite database file
 ```
 
 ---
