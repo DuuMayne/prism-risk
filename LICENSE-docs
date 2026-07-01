@@ -1,0 +1,38 @@
+Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+
+Copyright 2026 Adam Duman
+
+This license applies to all documentation, guides, framework templates,
+questionnaire files, and other non-code content in this repository,
+including but not limited to:
+
+  - README.md and all markdown documentation files
+  - frameworks/*.csv  (questionnaire templates)
+  - .claude/skills/  (skill documentation)
+
+The source code is licensed separately under the Elastic License 2.0.
+See LICENSE for the code license.
+
+=======================================================================
+
+You are free to:
+
+  Share  — copy and redistribute the material in any medium or format
+  Adapt  — remix, transform, and build upon the material
+
+Under the following terms:
+
+  Attribution     — You must give appropriate credit, provide a link to the
+                    license, and indicate if changes were made.
+
+  NonCommercial   — You may not use the material for commercial purposes.
+                    This means you may not sell or commercially distribute
+                    the documentation, templates, or derivative works thereof.
+
+No additional restrictions — You may not apply legal terms or technological
+measures that legally restrict others from doing anything the license permits.
+
+=======================================================================
+
+Full license text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc/4.0/
