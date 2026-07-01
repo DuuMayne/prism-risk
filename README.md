@@ -257,4 +257,11 @@ data/              — SQLite database file
 
 ## License
 
-Apache 2.0 with Commons Clause. Free to use and modify for internal purposes; selling as a product requires permission. See [LICENSE](LICENSE) for full terms.
+| What | License |
+|---|---|
+| Source code | [Elastic License 2.0](LICENSE) |
+| Documentation & templates | [CC BY-NC 4.0](LICENSE-docs) |
+
+Free for anyone to use, fork, and build on — including commercially within your own organization. The one restriction: you cannot offer this software as a paid hosted or managed service. See [LICENSE](LICENSE) for full terms.
+
+Copyright 2026 Adam Duman
